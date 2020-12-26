@@ -147,11 +147,11 @@ void channelSelector()
 		{
 			if (selector_1[i].switchPin == A4 && selector_1[i].switchState == HIGH)
 			{
-				midiChannelCC = 0xB1;
+				midiChannelCC = 0xB0;
 			}
 			else if (selector_1[i].switchPin == A5 && selector_1[i].switchState == HIGH)
 			{
-				midiChannelCC = 0xB2;
+				midiChannelCC = 0xB1;
 			}
 		}
 		selector_1[i].switchStateOld = selector_1[i].switchState;
