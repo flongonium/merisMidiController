@@ -29,23 +29,16 @@ MIDI baudrate: 31250
   
      
      
-*HOW DOES CONTROL CHANGE WORK?*
-0xnc, 0xcc, 0xvv
-
-n is the status (0xB)
-
-c is the MIDI channel (e.g. 0)
-
-cc is the controller number (0-127)
-
-vv is the controller value (0-127)
+**HOW DOES CONTROL CHANGE WORK?**
+*0xnc, 0xcc, 0xvv
+**n is the status (0xB)
+**c is the MIDI channel (e.g. 0)
+**cc is the controller number (0-127)
+**vv is the controller value (0-127)
 
 
-*HOW DOES PROGRAM CHANGE WORK?*
-0xnc, 0xpp
-
-n is the status (0xC)
-
-c is the channel (e.g. 0)
-
-pp is the patch number (0-127)
+**HOW DOES PROGRAM CHANGE WORK?**
+*0xnc, 0xpp
+**n is the status (0xC)
+**c is the channel (e.g. 0)
+**pp is the patch number (0-127)
