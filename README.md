@@ -6,7 +6,9 @@ ATTENTION: I used an arduino clone from robotdyn - mini pro 3.3v! www.robotdyn.c
 With the activation of a switch, you can change the MIDI Adress, to send your instructions to another device
 
 
-MIDI baudrate: 31250                        
+MIDI baudrate: 31250
+
+
                                                                     A7   A6   A5   A4       -- SCL  SDA    -- I2C (TWI) support
     Control Change Table for Meris Polymoon:                        0    0    0    0   
     CC# 04 - Exp. pedal    CC# 22 - early modulation       SS --  0 10            09 0
@@ -25,17 +27,17 @@ MIDI baudrate: 31250
                                                                 GRN TX0 RX1 VCC GND BLK
    
   
-      
-   
-    ********HOW DOES CONTROL CHANGE WORK?*******
-   0xnc, 0xcc, 0xvv
+     
+     
+********HOW DOES CONTROL CHANGE WORK?*******
+     0xnc, 0xcc, 0xvv
       n is the status (0xB)  
       c is the MIDI channel (e.g. 0)
       cc is the controller number (0-127)
       vv is the controller value (0-127)
 
 
-    ********HOW DOES PROGRAM CHANGE WORK?*******
+********HOW DOES PROGRAM CHANGE WORK?*******
     0xnc, 0xpp
       n is the status (0xC)
       c is the channel (e.g. 0)
