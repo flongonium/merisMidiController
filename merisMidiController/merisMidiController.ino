@@ -9,6 +9,8 @@ Written by Luca Becci
 
 #include "midiCommands.h"
 
+int layerVal = 0;
+
 struct inputSwitch
 {
 	int switchPin;
@@ -28,19 +30,17 @@ struct inputSelector
 
 struct inputSwitch inputs[] =
 {
-	 {2, 8, 0, 0, 1}    // Preset - Switch 1, LED 1 -> permanent on
-	,{3, 8, 0, 0, 2}   // Preset - Switch 2, LED 2 -> permanent on
+	 {2, 6, 0, 0, 1}    // Preset - Switch 1, LED 1 -> permanent on
+	,{3, 7, 0, 0, 2}   // Preset - Switch 2, LED 2 -> permanent on
 	,{4, 8, 0, 0, 3}   // Preset - Switch 3, LED 3 -> permanent on
-	,{5, 8, 0, 0, 4}   // Preset - Switch 4, LED 4 -> permanent on
-	,{6, 8, 0, 0, 5}   // Change Up  - Switch 5, LED 5 -> momentary on
-	,{7, 8, 0, 0, 6}   // Change Dwn - Switch 6, LED 6 -> momentary on
+	,{5, 9, 0, 0, 4}   // Preset - Switch 4, LED 4 -> permanent on
 	,{0, 0, 0, 0, 0}    // End of list marker
 };
 
 struct inputSelector selector_1[] =
 {
-	 {A4, 8, 0, 0}   // Select 1 - LED 7 -> permanent on
-	,{A5, 8, 0, 0}   // Select 2 - LED 8 -> permanent on
+	 {A4, 10, 0, 0}   // Select 1 - LED 5 -> permanent on
+	,{A5, 11, 0, 0}   // Select 2 - LED 6 -> permanent on
 	,{0, 0, 0, 0}    // End of list marker
 };
 
@@ -68,8 +68,9 @@ void setup()
 /*-------------------------------------- MAIN PROGRAM--------------------------------------*/
 void loop()
 {
-  switchEvents();
+  toggleChannel();
   //channelSelector();
+  layerVal = setLayer(layerVal);
 }
 
 /*-------------------------------------- SETUPS --------------------------------------*/
@@ -111,7 +112,7 @@ void channelSelector()
 
 /*-------------------------------------- SWICHT EVENTS --------------------------------------*/
 
-void switchEvents()
+void toggleChannel()
 {
 	for(int i=0; inputs[i].switchPin != 0; ++i)
 	{
@@ -124,29 +125,19 @@ void switchEvents()
 				switch (inputs[i].midiMessageType)
 				{
 					case 1:
-						midiSend_PC(midiChannelPC, 1);
+						midiSend_PC(midiChannelPC, 1 + layerVal);
 						delay(50);
 						break;
 					case 2:
-						midiSend_PC(midiChannelPC, 2);
+						midiSend_PC(midiChannelPC, 2 + layerVal);
 						delay(50);
 						break;
 					case 3:
-						midiSend_PC(midiChannelPC, 3);
+						midiSend_PC(midiChannelPC, 3 + layerVal);
 						delay(50);
 						break;
 					case 4:
-						midiSend_PC(midiChannelPC, 4);
-						delay(50);
-						break;
-					case 5:
-						//midiSend_bankUp(midiChannelCC);
-           ++midiChannelPC;
-						delay(50);
-						break;
-					case 6:
-						//midiSend_bankDown(midiChannelCC);
-           --midiChannelPC;
+						midiSend_PC(midiChannelPC, 4 + layerVal);
 						delay(50);
 						break;
 					default:
@@ -156,5 +147,36 @@ void switchEvents()
 		}
 		inputs[i].switchStateOld = inputs[i].switchState;
 	}
+}
+
+int setLayer(int layerVal)
+{
+	int val = digitalRead(inputs[0].switchPin);
+	if (val == HIGH)
+	{
+		int val_up = digitalRead(inputs[2].switchPin);
+		int val_dwn = digitalRead(inputs[3].switchPin);
+		if (val_up == val)
+		{
+			layerVal = layerVal + 4;
+			if (layerVal > 12)
+			{
+				layerVal = 0;
+			}
+		}
+		else if (val_dwn == val)
+		{
+			layerVal = layerVal - 4;
+			if (layerVal < 0)
+			{
+				layerVal = 0;
+			}
+		}
+		else
+		{
+			break;
+		}
+	}
+	return layerVal;
 }
 
