@@ -6,8 +6,6 @@ An arduino based midi controller extension for the Meris Preset Switch.
 It is optimized for the Meris Polymoon, but can be used for all Meris pedals.
 ATTENTION: I used an arduino clone from robotdyn - mini pro 3.3v! www.robotdyn.com 
 
-With the activation of a switch, you can change the MIDI Adress, to send your instructions to another device
-
 
 MIDI baudrate: 31250
 
