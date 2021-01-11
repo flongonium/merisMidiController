@@ -59,19 +59,6 @@ void midiSend_presetDown(byte midiChannel)
 	Serial.write(byte(patchNumber));
 }
 
-//void switchChannel(bool up_or_down)
-//{
-//  if(up_or_down == 0)
-//  {
-//    ++midiChannelCC;
-//  }
-//  else if(up_or_down == 1)
-//  {
-//    --midiChannelCC;
-//  }
-//}
-
-
 
 
 #endif /* MIDICOMMANDS_H_ */

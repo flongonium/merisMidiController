@@ -7,7 +7,15 @@ Written by Luca Becci
 
 /*-------------------------------------- Variables declaration --------------------------------------*/
 
-#include "midiCommands.h"
+#include "SoftwareSerial.h"
+
+SoftwareSerial merisSerial(30, 12); // rx = 30 --> stays like written on board, tx is new on pin 12
+
+int patchNumber  = 1;
+int bank         = 1;
+
+byte midiChannelCC = 0xB0;     // 176, HEX B0 -> this is channel 0, must match with midi device
+byte midiChannelPC = 0xC0;     // 192, HEX C0 -> this is preset 0, let's start always with this preset
 
 int layerVal = 0;
 
@@ -30,10 +38,10 @@ struct inputSelector
 
 struct inputSwitch inputs[] =
 {
-	 {2, 6, 0, 0, 1}    // Preset - Switch 1, LED 1 -> permanent on
-	,{3, 7, 0, 0, 2}   // Preset - Switch 2, LED 2 -> permanent on
-	,{4, 8, 0, 0, 3}   // Preset - Switch 3, LED 3 -> permanent on
-	,{5, 9, 0, 0, 4}   // Preset - Switch 4, LED 4 -> permanent on
+	 {13, 6, 0, 0, 1}    // Preset - Switch 1, LED 1 -> permanent on
+	,{A0, 7, 0, 0, 2}   // Preset - Switch 2, LED 2 -> permanent on
+	,{A1, 8, 0, 0, 3}   // Preset - Switch 3, LED 3 -> permanent on
+	,{A2, 9, 0, 0, 4}   // Preset - Switch 4, LED 4 -> permanent on
 	,{0, 0, 0, 0, 0}    // End of list marker
 };
 
@@ -49,7 +57,8 @@ struct inputSelector selector_1[] =
 
 void setup()
 {
-  Serial.begin(31250); //MIDI rate = 31250
+  Serial.begin(9600); // for debugging
+  merisSerial.begin(31250);
 
   //set up switches and leds
   pinsSetup();
@@ -70,7 +79,7 @@ void loop()
 {
   toggleChannel();
   //channelSelector();
-  layerVal = setLayer(layerVal);
+  //layerVal = setLayer(layerVal);
 }
 
 /*-------------------------------------- SETUPS --------------------------------------*/
@@ -110,6 +119,51 @@ void channelSelector()
 	}
 }
 
+
+/*-------------------------------------- MIDI MAIN MESSAGES --------------------------------------*/
+
+void midiSend_CC(byte midiChannel, byte controllerNumber , byte controllerVal) // midiChannel = number of MIDI channel, controllerNumber = CC Message, controllerVal = data Value between 0-127
+{
+	merisSerial.write(midiChannel);
+	merisSerial.write(controllerNumber);
+	merisSerial.write(controllerVal);
+}
+
+void midiSend_PC(byte midiChannel, byte patchNumber) // midiChannel = number of MIDI channel, patchNumber = preset number between 0-127 (Meris can handle only 16)
+{
+	merisSerial.write(midiChannel);
+	merisSerial.write(patchNumber);
+}
+
+void midiSend_bankUp(byte midiChannel)
+{
+	++bank;
+	merisSerial.write(midiChannel);
+	merisSerial.write(byte(0));
+	merisSerial.write(byte(bank));
+}
+
+void midiSend_bankDown(byte midiChannel)
+{
+	--bank;
+	merisSerial.write(midiChannel);
+	merisSerial.write(byte(0));
+	merisSerial.write(byte(bank));
+}
+
+void midiSend_presetUp(byte midiChannel)
+{
+	++patchNumber;
+	merisSerial.write(midiChannel);
+	merisSerial.write(byte(patchNumber));
+}
+
+void midiSend_presetDown(byte midiChannel)
+{
+	--patchNumber;
+	merisSerial.write(midiChannel);
+	merisSerial.write(byte(patchNumber));
+}
 /*-------------------------------------- SWICHT EVENTS --------------------------------------*/
 
 void toggleChannel()
@@ -171,10 +225,6 @@ int setLayer(int layerVal)
 			{
 				layerVal = 0;
 			}
-		}
-		else
-		{
-			break;
 		}
 	}
 	return layerVal;
